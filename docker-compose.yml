@@ -1,0 +1,19 @@
+version: "3.8"
+services:
+  fastapi:
+    build: .
+    ports:
+      - "5000:3000"
+    command: "uvicorn app.main:app --host 0.0.0.0 --port 3000" 
+
+  db:
+    image: postgres:14.1
+    restart: always
+    environment:
+      - POSTGRES_USER=username
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=urls
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
