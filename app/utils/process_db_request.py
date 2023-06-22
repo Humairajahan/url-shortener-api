@@ -3,18 +3,19 @@ from fastapi.responses import JSONResponse
 from fastapi import HTTPException
 
 
+
 class DBRequest:
-    def __init__(self, longurl, shortcode):
+    def __init__(self, longurl, shorturl):
         self.longurl = longurl
-        self.shortcode = shortcode
+        self.shorturl = shorturl
 
     def find_entry(self):
         url_exists = (
-            session.query(URLs).filter(URLs.shortcode == self.shortcode)
+            session.query(URLs).filter(URLs.shortURL == self.shorturl)
         ).first()
         return url_exists
 
-    def create_entry(self, baseurl):
+    def create_entry(self):
         url_exists = self.find_entry()
         if url_exists:
             return JSONResponse(
@@ -25,17 +26,14 @@ class DBRequest:
                 },
             )
         else:
-            shorturl = baseurl + "/" + self.shortcode
-            new_entry = URLs(
-                longURL=self.longurl, shortcode=self.shortcode, shortURL=shorturl
-            )
+            new_entry = URLs(longURL=self.longurl, shortURL=self.shorturl)
             try:
                 session.rollback()
                 session.add(new_entry)
                 session.commit()
                 return JSONResponse(
                     status_code=201,
-                    content={"info": "URL processed", "url": self.shortcode},
+                    content={"info": "URL processed", "url": self.shorturl},
                 )
             except Exception as e:
                 raise HTTPException(status_code=500, detail=e)
