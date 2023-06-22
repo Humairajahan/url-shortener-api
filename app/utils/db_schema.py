@@ -28,6 +28,7 @@ class URLs(Base):
     id = Column(Integer, Identity(start=1, cycle=True), primary_key=True, index=True)
     longURL = Column(String)
     shortURL = Column(String)
+    shortcode = Column(String)
 
 
 Base.metadata.create_all(engine)

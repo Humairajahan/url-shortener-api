@@ -5,13 +5,14 @@ from fastapi import HTTPException
 
 
 class DBRequest:
-    def __init__(self, longurl, shorturl):
+    def __init__(self, longurl, shorturl, shortcode):
         self.longurl = longurl
         self.shorturl = shorturl
+        self.shortcode = shortcode
 
     def find_entry(self):
         url_exists = (
-            session.query(URLs).filter(URLs.shortURL == self.shorturl)
+            session.query(URLs).filter(URLs.shortcode == self.shortcode)
         ).first()
         return url_exists
 
@@ -26,7 +27,7 @@ class DBRequest:
                 },
             )
         else:
-            new_entry = URLs(longURL=self.longurl, shortURL=self.shorturl)
+            new_entry = URLs(longURL=self.longurl, shortURL=self.shorturl, shortcode=self.shortcode)
             try:
                 session.rollback()
                 session.add(new_entry)
