@@ -4,19 +4,17 @@ from fastapi import HTTPException
 
 
 class DBRequest:
-    def __init__(self, request, shortcode):
-        self.request = request
+    def __init__(self, longurl, shortcode):
+        self.longurl = longurl
         self.shortcode = shortcode
-
-    # request = {"baseurl": "", "longurl": "", "shorturl": ""}
 
     def find_entry(self):
         url_exists = (
-            session.query(URLs).filter(URLs.longURL == self.request.longurl)
+            session.query(URLs).filter(URLs.shortcode == self.shortcode)
         ).first()
         return url_exists
 
-    def create_entry(self):
+    def create_entry(self, baseurl):
         url_exists = self.find_entry()
         if url_exists:
             return JSONResponse(
@@ -27,7 +25,10 @@ class DBRequest:
                 },
             )
         else:
-            new_entry = URLs(longURL=self.request.longurl, shortURL=self.shortcode)
+            shorturl = baseurl + "/" + self.shortcode
+            new_entry = URLs(
+                longURL=self.longurl, shortcode=self.shortcode, shortURL=shorturl
+            )
             try:
                 session.rollback()
                 session.add(new_entry)

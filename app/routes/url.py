@@ -10,5 +10,6 @@ router = APIRouter()
 @router.post("/shortenURL")
 async def shorten_url(request: URLRequest):
     shortcode = short_uuid(longurl=short_uuid(request.longurl))
-    short_url = request.baseurl + "/" + shortcode
-    return DBRequest(request=request, shortcode=short_url).create_entry()
+    return DBRequest(longurl=request.longurl, shortcode=shortcode).create_entry(
+        baseurl=request.baseurl
+    )
