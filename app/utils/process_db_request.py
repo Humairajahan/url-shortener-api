@@ -18,26 +18,26 @@ class DBRequest:
     def create_entry(self):
         url_exists = self.find_entry()
         if url_exists:
-            return Response(
-                status_code=200,
-                content={
-                    "info": "URL processing done previously",
-                    "url": url_exists.shortURL,
-                },
+            response = Response(
+                content=url_exists.shortURL,
+                media_type="text/plain",
             )
+            response.status_code = 200
+            return response
         else:
-            new_entry = URLs(longURL=self.longurl, shortURL=self.shorturl, shortcode=self.shortcode)
+            new_entry = URLs(
+                longURL=self.longurl, shortURL=self.shorturl, shortcode=self.shortcode
+            )
             try:
                 session.rollback()
                 session.add(new_entry)
                 session.commit()
-                return Response(
-                    status_code=201,
-                    content={"info": "URL processed", "url": self.shorturl},
-                )
+                response = Response(content=self.shorturl, media_type="text/plain")
+                response.status_code = 201
+                return response
             except Exception as e:
                 raise HTTPException(status_code=500, detail=e)
-            
+
     def return_entry(self):
         url_exists = self.find_entry()
         if url_exists:
